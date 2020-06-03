@@ -1,0 +1,21 @@
+1. Hearts
+2. Diamonds
+3. Spades
+4. Clubs
+
+so 4 of hearts will be h3
+king of spades will be s12
+10 of diamonds will be d10
+A of clubs will be c13
+
+A - 13
+K - 12
+Q - 11
+J - 10
+10 - 9
+9 - 8
+.
+.
+.
+2 - 1
+1 - 0
