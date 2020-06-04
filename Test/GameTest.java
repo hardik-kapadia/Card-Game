@@ -28,5 +28,7 @@ public class GameTest {
         assertEquals(1,p[0].getPoints());
         p[0].addPoints(3);
         assertEquals(4,p[0].getPoints());
+
+        // added a comment to test branches
     }
 }
