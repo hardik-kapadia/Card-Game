@@ -65,5 +65,10 @@ public class DeckTest {
         assertEquals(23, d.cardToIndex(d.indexToCard(23)));
     }
 
+    @Test
+    public void checkHands(){
+
+    }
+
 
 }

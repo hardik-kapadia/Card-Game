@@ -37,11 +37,15 @@ public class Game {
         getNames();
         deck.deal();
         for (int i = 0; i < numberOfPlayers; i++) {
-            players[i] = new Player(deck.getPlayerDecks()[i], playerNames[i]);
+            players[i] = new Player(deck.getPlayerDecks()[i], playerNames[i],i);
         }
         currentHand = new ArrayList<>();
         handStarter = 0;
         startHand(handStarter);
+    }
+
+    public Player[] getPlayers() {
+        return players;
     }
 
     public void startHand(int hStarter) {
@@ -124,6 +128,7 @@ public class Game {
         sortPlayersByPoints();
         printScoreCard();
         deck.resetDeck();
+        startGame();
     }
 
     public void printScoreCard() {

@@ -44,10 +44,10 @@ public class Deck {
         cardsLeft = 52;
     }
 
-    public void deal() {
+    public void deal() { //deals al cards among the numberOfPlayers
         Random r = new Random();
         for (int i = 0; i < 52; i++) {
-            int player = r.nextInt(4);
+            int player = r.nextInt(numberOfPlayers);
             if (playerDecks[player].size() < 13) {
                 playerDecks[player].add(allCards[i]);
             } else {
