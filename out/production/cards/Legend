@@ -1,7 +1,7 @@
-1. Hearts
-2. Diamonds
-3. Spades
-4. Clubs
+0. Hearts h 104
+1. Diamonds d 100
+2. Spades s 115
+3. Clubs c 99
 
 so 4 of hearts will be h3
 king of spades will be s12
@@ -17,5 +17,5 @@ J - 10
 .
 .
 .
+3 - 2
 2 - 1
-1 - 0
