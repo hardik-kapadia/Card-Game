@@ -97,6 +97,10 @@ public class Deck {
         return allCards[index];
     }
 
+    public int getNumberOfPlayers() {
+        return numberOfPlayers;
+    }
+
     public String[] returnFullDeck() {
         return allCards;
     }

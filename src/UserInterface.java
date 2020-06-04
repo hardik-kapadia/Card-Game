@@ -19,7 +19,7 @@ public class UserInterface {
             switch (choice) {
                 case '1':
                     Deck allCards = new Deck(4);
-                    Game mshearts = new Game(allCards);
+                    Game mshearts = new Game(allCards,scanner);
                     break;
                 case '2':
                     break;
