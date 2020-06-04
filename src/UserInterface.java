@@ -3,7 +3,8 @@ import java.util.Scanner;
 public class UserInterface {
 
     private Scanner scanner;
-    private Deck d;
+    private Deck deck;
+    private Game game;
 
     public UserInterface(Scanner sc) {
         this.scanner = sc;
@@ -18,8 +19,8 @@ public class UserInterface {
             choice = scanner.next().charAt(0);
             switch (choice) {
                 case '1':
-                    Deck allCards = new Deck(4);
-                    Game mshearts = new Game(allCards);
+                    deck = new Deck(4);
+                    game = new Game(deck,scanner);
                     break;
                 case '2':
                     break;
@@ -27,5 +28,6 @@ public class UserInterface {
                     System.out.println("Invalid Option");
             }
         } while (choice != 'X' && choice != 'x');
+        game.startGame();
     }
 }
