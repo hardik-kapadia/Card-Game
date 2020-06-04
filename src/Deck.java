@@ -3,6 +3,7 @@ import java.util.*;
 public class Deck {
 
     private String[] allCards;
+    private int[] allCardsNum;
     private ArrayList<String>[] playerDecks;
     private int numberOfPlayers;
     private int cardsLeft;
@@ -38,7 +39,7 @@ public class Deck {
                 default:
                     continue;
             }
-            allCards[i] += valueAssigner + 1;
+            allCards[i] += valueAssigner + 2;
         }
         cardsLeft = 52;
     }
@@ -60,11 +61,11 @@ public class Deck {
             System.out.println("Not enough cards");
         } else {
             Random r = new Random();
-            for(int i=0;i<numberOfCards*numberOfPlayers;i++){
-                while(true){
+            for (int i = 0; i < numberOfCards * numberOfPlayers; i++) {
+                while (true) {
                     int card = r.nextInt(cardsLeft);
                     int player = r.nextInt(numberOfPlayers);
-                    if(playerDecks[player].size()<numberOfCards){
+                    if (playerDecks[player].size() < numberOfCards) {
                         playerDecks[player].add(allCards[card]);
                         remove(card);
                         break;
@@ -78,23 +79,35 @@ public class Deck {
         return playerDecks;
     }
 
-    public void resetDeck(){
+    public void resetDeck() {
         createDeck();
-        for(int i=0;i<numberOfPlayers;i++){
+        for (int i = 0; i < numberOfPlayers; i++) {
             playerDecks[i].clear();
         }
     }
 
-    private void remove(int index){
-        for(int i = index;i<cardsLeft-1;i++){
-            this.allCards[i] = this.allCards[i+1];
-        }
-        this.allCards[cardsLeft-1] = null;
+    private void remove(int index) {
+        if (cardsLeft - 1 - index >= 0)
+            System.arraycopy(this.allCards, index + 1, this.allCards, index, cardsLeft - 1 - index);
+        this.allCards[cardsLeft - 1] = null;
         this.cardsLeft--;
     }
 
-    public String indexToCard(int index){
+    public String indexToCard(int index) {
         return allCards[index];
+    }
+
+    public int cardToIndex(String card) {
+        int cardNum = switch (card.charAt(0)) {
+            case 'h' -> 0;
+            case 'd' -> 13;
+            case 's' -> 26;
+            case 'c' -> 39;
+            default -> 53;
+        };
+        int cardVal = Integer.parseInt(card.substring(1)) - 2;
+        cardNum += cardVal;
+        return cardNum;
     }
 
     public int getNumberOfPlayers() {

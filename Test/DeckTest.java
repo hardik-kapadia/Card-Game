@@ -58,5 +58,12 @@ public class DeckTest {
         }
     }
 
+    @Test
+    public void checkConversion(){
+        assertEquals(0,d.cardToIndex("h2"));
+        assertEquals(51,d.cardToIndex("c14"));
+        assertEquals(23, d.cardToIndex(d.indexToCard(23)));
+    }
+
 
 }
