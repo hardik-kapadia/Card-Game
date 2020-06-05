@@ -97,9 +97,9 @@ public class Game {
                 }
             }
             System.out.println("\nFinal hand: " + Arrays.toString(getPrintableHand(currentHand)));
-            Player nextHandStarter = getHandWinner(currentHand, symbol);
+            Player nextHandStarter = getHandWinner(currentHand, symbol, hStarter);
             System.out.println(nextHandStarter.getName() + " got the hand");
-            addHandPoints(currentHand, getHandWinner(currentHand, symbol));
+            addHandPoints(currentHand, nextHandStarter);
             handCount++;
             printScoreCard();
             startHand(nextHandStarter);
@@ -120,20 +120,24 @@ public class Game {
         return scanner.nextInt();
     }
 
-    public Player getHandWinner(String[] handAtPlay, int symbol) {
-        int winner = 0;
-        for (int i = 0; i < numberOfPlayers; i++) {
-            int[] symbolAndValue = getSymbolAndValue(handAtPlay[i]);
-            if (symbolAndValue[0] == symbol) {
-                if (symbolAndValue[1] > getSymbolAndValue(currentHand[winner])[1]) {
-                    winner = i;
-                }
+    public Player getHandWinner(String[] handAtPlay, int symbol, @NotNull Player starter) {
+        Player winner = starter;
+        System.out.println("By default winner is: "+winner.getName());
+        System.out.println("Symbol received"+numToString(symbol));
+        for(Player p : players){
+            int[] symbolAndValue = getSymbolAndValue(handAtPlay[p.getId()]);
+            if(symbolAndValue[0] != symbol){
+                continue;
             }
+            if(symbolAndValue[1] < Integer.parseInt(handAtPlay[winner.getId()].substring(1))){
+                continue;
+            }
+            winner = p;
         }
-        return players[winner];
+        return winner;
     }
 
-    public void addHandPoints(String[] handAtPlay, Player winner) {
+    public void addHandPoints(String  [] handAtPlay, Player winner) {
         int totalPointsGiveToWinner = 0;
         for (String s : handAtPlay) {
             int[] symbolAndValue = getSymbolAndValue(s);
@@ -197,19 +201,7 @@ public class Game {
     }
 
     public boolean checkPoints(Player player) {
-        return player.getPoints() < 10;
-    }
-
-    public void sortPlayersByPoints() {
-        for (int i = 0; i < numberOfPlayers; i++) {
-            for (int j = 0; j < numberOfPlayers - i - 1; j++) {
-                if (players[j].getPoints() > players[j + 1].getPoints()) {
-                    Player temp = players[j];
-                    players[j] = players[j + 1];
-                    players[j + 1] = temp;
-                }
-            }
-        }
+        return player.getPoints() < 100;
     }
 
     private String numToString(int symbol) {
