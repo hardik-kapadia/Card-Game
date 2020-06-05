@@ -28,7 +28,7 @@ public class Deck {
                 case 0 -> "h";
                 case 1 -> "d";
                 case 2 -> "s";
-                case 3 -> "s";
+                case 3 -> "c";
                 default -> "n";
             };
             allCards[i] += valueAssigner + 2;

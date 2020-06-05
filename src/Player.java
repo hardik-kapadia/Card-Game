@@ -19,6 +19,10 @@ public class Player {
         return id;
     }
 
+    public void setPlayerCards(ArrayList<String> playerCards) {
+        this.playerCards = playerCards;
+    }
+
     public void removeCard(int index){
         playerCards.remove(index);
     }
