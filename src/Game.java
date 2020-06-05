@@ -76,7 +76,7 @@ public class Game {
         if (handCount <= 13) {
             emptyArray(currentHand);
             System.out.println("\n-------------------------------------------------------");
-            System.out.println("\nStarting hand number: " + handCount + "\n");
+            System.out.println("\nStarting hand number: " + handCount);
             int symbol = 4;
             for (int i = 0; i < numberOfPlayers; i++) {
                 // int currentPlayerNum = (hStarter.getId() + i) % 4;
@@ -96,7 +96,7 @@ public class Game {
                     i--;
                 }
             }
-            System.out.println("Final hand: " + Arrays.toString(getPrintableHand(currentHand)));
+            System.out.println("\nFinal hand: " + Arrays.toString(getPrintableHand(currentHand)));
             Player nextHandStarter = getHandWinner(currentHand, symbol);
             System.out.println(nextHandStarter.getName() + " got the hand");
             addHandPoints(currentHand, getHandWinner(currentHand, symbol));
@@ -117,8 +117,7 @@ public class Game {
             System.out.print("("+i + ") " + getPrintableCard(player.getPlayerCards().get(i)) + "\t");
         }
         System.out.print("\nEnter number corresponding to card you want to play: ");
-        int cardSelected = scanner.nextInt();
-        return cardSelected;
+        return scanner.nextInt();
     }
 
     public Player getHandWinner(String[] handAtPlay, int symbol) {
