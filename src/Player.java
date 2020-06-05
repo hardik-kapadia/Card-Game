@@ -14,6 +14,10 @@ public class Player {
         this.id = id;
     }
 
+    public int getId() {
+        return id;
+    }
+
     public ArrayList<String> getPlayerCards() {
         return playerCards;
     }
