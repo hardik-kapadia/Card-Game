@@ -14,6 +14,9 @@ public class Game {
     private String[] currentHand;
     private int handCount;
     private int roundCount;
+    private boolean canPlayHearts;
+    private boolean isFirstCard;
+    private int positionOfFirstCard;
 
     public Game(Deck deck, Scanner sc) {
         this.deck = deck;
@@ -29,7 +32,7 @@ public class Game {
             System.out.println("Enter your name: [leave blank to replace with bot]");
             String name = scanner.nextLine();
             if (name.equals("")) {
-                playerNames[i] = ("Bot " + (i + 1));
+                playerNames[i] = ("Bot-" + (i + 1));
             } else {
                 playerNames[i] = (name);
             }
@@ -50,26 +53,33 @@ public class Game {
     public void startRound() {
         System.out.println("\n-------------------------------------------------------");
         System.out.println("-------------------------------------------------------");
-        System.out.println("\nRound no. "+roundCount+" started");
+        System.out.println("\nRound no. " + roundCount + " started");
         if (checkGameStats()) {
             // System.out.println("checkGameStats() Passed");
             deck.resetDeck();
             deck.deal();
-            for(int i =0;i<numberOfPlayers;i++){
+            for (int i = 0; i < numberOfPlayers; i++) {
                 players[i].setPlayerCards(deck.getPlayerDecks()[i]);
             }
-            handStarter = players[0];
+            this.canPlayHearts = false;
+            this.isFirstCard = true;
+            this.handStarter = firstStarter();
+            this.positionOfFirstCard = 0;
             emptyArray(currentHand);
             handCount = 1;
             startHand(handStarter);
         } else {
-            System.out.println("checkGameStats() failed");
             endGame();
         }
     }
 
-    public Player[] getPlayers() {
-        return players;
+    private Player firstStarter() {
+        for (Player p : players) {
+            if (p.getPlayerCards().contains("c2")) {
+                return p;
+            }
+        }
+        return players[0];
     }
 
     public void startHand(Player hStarter) {
@@ -79,13 +89,20 @@ public class Game {
             System.out.println("\nStarting hand number: " + handCount);
             int symbol = 4;
             for (int i = 0; i < numberOfPlayers; i++) {
-                // int currentPlayerNum = (hStarter.getId() + i) % 4;
                 Player currentPlayer = players[(hStarter.getId() + i) % 4];
                 int playNum = promptUser(currentPlayer, symbol);
                 String play = currentPlayer.getPlayerCards().get(playNum);
                 System.out.println("The card you have selected is: " + getPrintableCard(play));
                 if (symbol == 4) {
                     symbol = getSymbolAndValue(play)[0];
+                    if (symbol == 0) {
+                        if (!this.canPlayHearts) {
+                            symbol = 4;
+                            i--;
+                            System.out.println("You Cannot play a Heart Card till you play it as a foke first");
+                            continue;
+                        }
+                    }
                     System.out.println("New hand started, symbol assigned: " + numToString(getSymbolAndValue(play)[0]));
                 }
                 if (playValidity(currentPlayer, play, symbol)) {
@@ -101,6 +118,8 @@ public class Game {
             System.out.println(nextHandStarter.getName() + " got the hand");
             addHandPoints(currentHand, nextHandStarter);
             handCount++;
+            System.out.println("\n-------------------------------------------------------\n");
+            System.out.print("ScoreCard: \n\n");
             printScoreCard();
             startHand(nextHandStarter);
         } else {
@@ -109,27 +128,45 @@ public class Game {
     }
 
     public int promptUser(@NotNull Player player, int symbol) {
-        System.out.println("\nIts is " + player.getName() + "'s turn.");
-        System.out.println("The current hand is: " + Arrays.toString(getPrintableHand(currentHand)));
-        if (symbol != 4) System.out.println("Ongoing Symbol is: " + numToString(symbol));
+        System.out.println("\n|\tIts is " + player.getName() + "'s turn\t|\n");
+        System.out.println("The current hand is: ");
+        String[] printingHand = getPrintableHand(currentHand);
+        for(int j =0;j<numberOfPlayers;j++){
+            System.out.print(players[j].getName()+": "+printingHand[j]+"\t");
+        }
+        System.out.println();
+        // + Arrays.toString());
+        if (symbol != 4) System.out.println("Ongoing Symbol is: " + numToString(symbol)+"\n");
         System.out.println("Your cards are: ");
         for (int i = 0; i < player.getPlayerCards().size(); i++) {
-            System.out.print("("+i + ") " + getPrintableCard(player.getPlayerCards().get(i)) + "\t");
+            System.out.print("(" + i + ") " + getPrintableCard(player.getPlayerCards().get(i)) + "\t");
+            if(i==7){
+                System.out.println();
+            }
         }
-        System.out.print("\nEnter number corresponding to card you want to play: ");
+        if (isFirstCard) {
+            System.out.println("\nThis is the first play, so the 2 of clubs is automatically selected for you.");
+            isFirstCard = false;
+            for (int i = 0; i < player.getPlayerCards().size(); i++) {
+                if (player.getPlayerCards().get(i).equals("c2")) {
+                    return i;
+                }
+            }
+        }
+        System.out.print("\n\nEnter number corresponding to card you want to play: ");
         return scanner.nextInt();
     }
 
+
+
     public Player getHandWinner(String[] handAtPlay, int symbol, @NotNull Player starter) {
         Player winner = starter;
-        System.out.println("By default winner is: "+winner.getName());
-        System.out.println("Symbol received"+numToString(symbol));
-        for(Player p : players){
+        for (Player p : players) {
             int[] symbolAndValue = getSymbolAndValue(handAtPlay[p.getId()]);
-            if(symbolAndValue[0] != symbol){
+            if (symbolAndValue[0] != symbol) {
                 continue;
             }
-            if(symbolAndValue[1] < Integer.parseInt(handAtPlay[winner.getId()].substring(1))){
+            if (symbolAndValue[1] < Integer.parseInt(handAtPlay[winner.getId()].substring(1))) {
                 continue;
             }
             winner = p;
@@ -137,7 +174,7 @@ public class Game {
         return winner;
     }
 
-    public void addHandPoints(String  [] handAtPlay, Player winner) {
+    public void addHandPoints(String[] handAtPlay, Player winner) {
         int totalPointsGiveToWinner = 0;
         for (String s : handAtPlay) {
             int[] symbolAndValue = getSymbolAndValue(s);
@@ -156,7 +193,7 @@ public class Game {
         } else {
             winner.addPoints(totalPointsGiveToWinner);
         }
-        System.out.println(totalPointsGiveToWinner + " points awarded to " + winner.getName()+"\n");
+        System.out.println(totalPointsGiveToWinner + " points awarded to " + winner.getName() + "\n");
     }
 
     private int[] getSymbolAndValue(@NotNull String card) {
@@ -169,6 +206,7 @@ public class Game {
         Arrays.fill(arrayToEmpty, null);
     }
 
+
     public boolean playValidity(Player player, String play, int symbol) {
         if (symbolToNum(play.charAt(0)) == symbol) {
             return true;
@@ -178,6 +216,9 @@ public class Game {
                 return false;
             }
         }
+
+        if (symbol == 0) this.canPlayHearts = true;
+
         return true;
     }
 
@@ -255,18 +296,18 @@ public class Game {
 
     public void endGame() {
         System.out.println("Game has ended!");
-        System.out.println(getWinner().getName()+" is the Winner!!!\n\n");
+        System.out.println(getWinner().getName() + " is the Winner!!!\n\n");
         System.out.println("\n------------------------------------------------");
         System.out.println("\n------------------------------------------------");
         printScoreCard();
         deck.resetDeck();
     }
 
-    public Player getWinner(){
+    public Player getWinner() {
         Player winner;
         winner = players[0];
-        for(Player player : players){
-            if(player.getPoints() < winner.getPoints()){
+        for (Player player : players) {
+            if (player.getPoints() < winner.getPoints()) {
                 winner = player;
             }
         }
