@@ -157,8 +157,6 @@ public class Game {
         return scanner.nextInt();
     }
 
-
-
     public Player getHandWinner(String[] handAtPlay, int symbol, @NotNull Player starter) {
         Player winner = starter;
         for (Player p : players) {
