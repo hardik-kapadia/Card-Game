@@ -1,4 +1,5 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class Deck {
 
@@ -23,22 +24,13 @@ public class Deck {
             int symbolAssigner, valueAssigner;
             symbolAssigner = i / 13;
             valueAssigner = i % 13;
-            switch (symbolAssigner) {
-                case 0:
-                    allCards[i] = "h";
-                    break;
-                case 1:
-                    allCards[i] = "d";
-                    break;
-                case 2:
-                    allCards[i] = "s";
-                    break;
-                case 3:
-                    allCards[i] = "c";
-                    break;
-                default:
-                    continue;
-            }
+            allCards[i] = switch (symbolAssigner) {
+                case 0 -> "h";
+                case 1 -> "d";
+                case 2 -> "s";
+                case 3 -> "s";
+                default -> "n";
+            };
             allCards[i] += valueAssigner + 2;
         }
         cardsLeft = 52;

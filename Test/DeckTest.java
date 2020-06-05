@@ -1,12 +1,13 @@
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DeckTest {
 
-    private Deck d,d1,d2;
+    private Deck d, d1, d2;
 
     @Before
     public void setUp() {
@@ -59,14 +60,14 @@ public class DeckTest {
     }
 
     @Test
-    public void checkConversion(){
-        assertEquals(0,d.cardToIndex("h2"));
-        assertEquals(51,d.cardToIndex("c14"));
+    public void checkConversion() {
+        assertEquals(0, d.cardToIndex("h2"));
+        assertEquals(51, d.cardToIndex("c14"));
         assertEquals(23, d.cardToIndex(d.indexToCard(23)));
     }
 
     @Test
-    public void checkHands(){
+    public void checkHands() {
 
     }
 
