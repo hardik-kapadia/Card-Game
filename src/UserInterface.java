@@ -2,7 +2,7 @@ import java.util.Scanner;
 
 public class UserInterface {
 
-    private Scanner scanner;
+    private final Scanner scanner;
     private Deck deck;
     private Game game;
 
@@ -14,16 +14,14 @@ public class UserInterface {
         char choice;
         System.out.println("Please select the Game you want to play");
         System.out.println("1. M.S. Hearts\n2. 7-8\nX. exits"); //Game 2 is not yet developed
-        System.out.println("\nEnter your Choice: [1/2/X]");
+        System.out.print("\nEnter your Choice: [1/2/X]");
         choice = scanner.nextLine().charAt(0);
-        switch (choice) {
-            case '1':
-                deck = new Deck(4);
-                game = new Game(deck, scanner);
-                game.startGame();
-                break;
-            default:
-                System.out.println("Invalid Option");
+        if (choice == '1') {
+            deck = new Deck(4);
+            game = new Game(deck, scanner);
+            game.startGame();
+        } else {
+            System.out.println("Invalid Option");
         }
     }
 }
