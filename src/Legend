@@ -1,21 +1,20 @@
-0. Hearts h 104
-1. Diamonds d 100
-2. Spades s 115
-3. Clubs c 99
+0 - h - Hearts
+1 - d - Diamonds
+2 - s - Spades
+3 - c - Clubs
 
-so 4 of hearts will be h3
-king of spades will be s12
-10 of diamonds will be d10
-A of clubs will be c13
+14 A
+13 K
+12 Q
+11 J
+10 10
+.
+.
+.
+3 3
+2 2
 
-A(14) - 12
-K(13) - 11
-Q(12) - 10
-J(11) - 9
-10 - 8
-9 - 7
-.
-.
-.
-3 - 1
-2 - 0
+So, Aces of Spades is s14
+    5 of Diamonds id d5
+    joker of clubs is c11
+    2 of hearts is h2

@@ -1,15 +1,14 @@
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class Player {
 
-    private ArrayList<String> playerCards;
-    private String name;
+    private ArrayList<String> playerCards; // player's deck
+    private final String name;
     private int points;
-    private int id;
-    private boolean isBot;
+    private final int id;
+    private boolean isBot; // whether player is a bot or person
 
-    public Player(ArrayList<String> cards, String name, int id, boolean isBot) {
+    public Player(ArrayList<String> cards, String name, int id, boolean isBot) { // Initialization
         this.playerCards = cards;
         this.points = 0;
         this.name = name;
@@ -17,38 +16,28 @@ public class Player {
         this.isBot = isBot;
     }
 
-    public int getId() {
+    public int getId() { // returns player's id
         return id;
     }
 
-    public void setBotStatus(boolean isBot){
-        this.isBot = isBot;
-    }
-
-    public boolean isBot() {
+    public boolean isBot() { // returns whether the player is a bot or not
         return isBot;
     }
 
-    public void setPlayerCards(ArrayList<String> playerCards) {
+    public void setPlayerCards(ArrayList<String> playerCards) { // gives the player a fresh deck of cards (implemented after every round)
         this.playerCards = playerCards;
     }
 
-    public void removeCard(int index){
+    public void removeCard(int index){ // removes said card from player's deck
         playerCards.remove(index);
     }
 
-    public String returnAndRemoveCard(int index){
-        String temp = playerCards.get(index);
-        playerCards.remove(index);
-        return temp;
-    }
-
-    public ArrayList<String> getPlayerCards() {
+    public ArrayList<String> getPlayerCards() { // returns an ArrayList of player's deck of cards
         return playerCards;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o) { // self-explanatory
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Player player = (Player) o;
@@ -58,20 +47,20 @@ public class Player {
                 name.equals(player.name);
     }
 
-    public void addPoints(int points) {
+    public void addPoints(int points) { // adds points for the player
         this.points += points;
     }
 
-    public String getName() {
+    public String getName() { // returns player's name
         return name;
     }
 
-    public int getPoints() {
+    public int getPoints() { // returns player's points
         return points;
     }
 
     @Override
-    public String toString() {
+    public String toString() { // default method
         return "Player{" +
                 "playerCards=" + playerCards +
                 ", name='" + name + '\'' +
