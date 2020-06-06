@@ -10,11 +10,11 @@ public class Game {
     private final int numberOfPlayers;
     private String[] playerNames;
     private Player[] players;
-    private String[] currentHand;
-    private int handCount;
-    private int roundCount;
-    private boolean canPlayHearts;
-    private boolean isFirstCard;
+    private String[] currentHand; // contains all the cards of the playing hand
+    private int handCount; // number of hands played
+    private int roundCount; // number of rounds played
+    private boolean canPlayHearts; // can They play a heart's card yet?
+    private boolean isFirstCard; // Is it the first card for comparing
 
     public Game(Deck deck, Scanner sc) { // initializing all necessary variables
         this.deck = deck;
@@ -314,14 +314,14 @@ public class Game {
 
     public boolean checkGameStats() { // check whether the game should go on or not based on the player's points
         for (int i = 0; i < numberOfPlayers; i++) {
-            if (!checkPoints(players[i])) { // checks if any player's points are above hundred, if so: return false
+            if (!checkPoints(players[i])) { // checks if any player's points are above 50, if so: return false
                 return false;
             }
         }
         return true; // else, return true
     }
 
-    public boolean checkPoints(Player player) { // check whether given player's points are below 100...
+    public boolean checkPoints(Player player) { // check whether given player's points are below 50...
         return player.getPoints() < 100; // ... or not
     }
 
@@ -336,7 +336,7 @@ public class Game {
     }
 
     private String getPrintableCard(String card) { // returns a String with a beautified format of card
-                                                   // h10 becomes 10 of Hearts & s14 becomes Ace of Spades (More info in legend)
+        // h10 becomes 10 of Hearts & s14 becomes Ace of Spades (More info in legend)
         String properCard;
         if (card == null) { // if card is not yet played, returns so
             return "Not yet played";
