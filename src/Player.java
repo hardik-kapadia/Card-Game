@@ -7,16 +7,26 @@ public class Player {
     private String name;
     private int points;
     private int id;
+    private boolean isBot;
 
-    public Player(ArrayList<String> cards, String name, int id) {
+    public Player(ArrayList<String> cards, String name, int id, boolean isBot) {
         this.playerCards = cards;
         this.points = 0;
         this.name = name;
         this.id = id;
+        this.isBot = isBot;
     }
 
     public int getId() {
         return id;
+    }
+
+    public void setBotStatus(boolean isBot){
+        this.isBot = isBot;
+    }
+
+    public boolean isBot() {
+        return isBot;
     }
 
     public void setPlayerCards(ArrayList<String> playerCards) {

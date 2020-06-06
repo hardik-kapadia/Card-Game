@@ -28,13 +28,22 @@ public class Game {
     }
 
     public void getNames() {
-        for (int i = 0; i < deck.getNumberOfPlayers(); i++) {
-            System.out.println("Enter your name: [leave blank to replace with bot]");
-            String name = scanner.nextLine();
-            if (name.equals("")) {
-                playerNames[i] = ("Bot-" + (i + 1));
+        while (true) {
+            int numberOfBots = 0;
+            for (int i = 0; i < deck.getNumberOfPlayers(); i++) {
+                System.out.println("Enter your name: [leave blank to replace with bot]");
+                String name = scanner.nextLine();
+                if (name.equals("")) {
+                    playerNames[i] = ("Bot-" + (i + 1));
+                    numberOfBots++;
+                } else {
+                    playerNames[i] = (name);
+                }
+            }
+            if(numberOfBots < 4){
+                break;
             } else {
-                playerNames[i] = (name);
+                System.out.println("You have to add at least one player!");
             }
         }
     }
@@ -43,8 +52,15 @@ public class Game {
         getNames();
         deck.deal();
         for (int i = 0; i < numberOfPlayers; i++) {
-            players[i] = new Player(deck.getPlayerDecks()[i], playerNames[i], i);
+
             // System.out.println("Deck assigned to "+players[i].getName());
+            if (playerNames[i].equals("Bot-" + (i + 1))) {
+                players[i] = new Player(deck.getPlayerDecks()[i], playerNames[i], i, true);
+                // players[i].setBotStatus(true);
+            } else {
+                players[i] = new Player(deck.getPlayerDecks()[i], playerNames[i], i, false);
+                // players[i].setBotStatus(false);
+            }
         }
         this.roundCount = 1;
         startRound();
@@ -68,6 +84,7 @@ public class Game {
             emptyArray(currentHand);
             handCount = 1;
             startHand(handStarter);
+            roundCount++;
         } else {
             endGame();
         }
@@ -92,7 +109,7 @@ public class Game {
                 Player currentPlayer = players[(hStarter.getId() + i) % 4];
                 int playNum = promptUser(currentPlayer, symbol);
                 String play = currentPlayer.getPlayerCards().get(playNum);
-                System.out.println("The card you have selected is: " + getPrintableCard(play));
+                System.out.println("\n" + currentPlayer.getName() + " Played: " + getPrintableCard(play));
                 if (symbol == 4) {
                     symbol = getSymbolAndValue(play)[0];
                     if (symbol == 0) {
@@ -131,21 +148,20 @@ public class Game {
         System.out.println("\n|\tIts is " + player.getName() + "'s turn\t|\n");
         System.out.println("The current hand is: ");
         String[] printingHand = getPrintableHand(currentHand);
-        for(int j =0;j<numberOfPlayers;j++){
-            System.out.print(players[j].getName()+": "+printingHand[j]+"\t");
+        for (int j = 0; j < numberOfPlayers; j++) {
+            System.out.print(players[j].getName() + ": " + printingHand[j] + "\t");
         }
         System.out.println();
-        // + Arrays.toString());
-        if (symbol != 4) System.out.println("Ongoing Symbol is: " + numToString(symbol)+"\n");
+        if (symbol != 4) System.out.println("Ongoing Symbol is: " + numToString(symbol) + "\n");
         System.out.println("Your cards are: ");
         for (int i = 0; i < player.getPlayerCards().size(); i++) {
             System.out.print("(" + i + ") " + getPrintableCard(player.getPlayerCards().get(i)) + "\t");
-            if(i==7){
+            if (i == 7) {
                 System.out.println();
             }
         }
         if (isFirstCard) {
-            System.out.println("\nThis is the first play, so the 2 of clubs is automatically selected for you.");
+            System.out.println("\n\nThis is the first play, so the 2 of clubs is automatically selected for you.");
             isFirstCard = false;
             for (int i = 0; i < player.getPlayerCards().size(); i++) {
                 if (player.getPlayerCards().get(i).equals("c2")) {
@@ -153,8 +169,79 @@ public class Game {
                 }
             }
         }
+        if (player.isBot()) {
+            System.out.println();
+            return autoPlay(player, symbol);
+        }
         System.out.print("\n\nEnter number corresponding to card you want to play: ");
         return scanner.nextInt();
+    }
+
+    public int autoPlay(Player player, int symbol) {
+        int autoPlayCard = 0;
+        if (symbol == 4) {
+            while (true) {
+                autoPlayCard = (int) (Math.random() * player.getPlayerCards().size());
+                System.out.println("Can play hearts? "+this.canPlayHearts);
+                System.out.println("\n\tAutomatically playing "+getPrintableCard(player.getPlayerCards().get(autoPlayCard))+" as handStarter");
+                if(this.canPlayHearts){
+                    return autoPlayCard;
+                } else if (symbolToNum(player.getPlayerCards().get(autoPlayCard).charAt(0)) != 0) {
+                    return autoPlayCard;
+                }
+            }
+        }
+        boolean setFirst = true;
+        boolean cardOfSymbolFound = false;
+        boolean heartsCardFound = false;
+        for (int i = 0; i < player.getPlayerCards().size(); i++) {
+            String s = player.getPlayerCards().get(i);
+            int[] symbolAndValue = getSymbolAndValue(s);
+            if (symbolAndValue[0] == symbol) {
+                cardOfSymbolFound = true;
+                if (setFirst) {
+                    autoPlayCard = i;
+                    setFirst = false;
+                } else if (symbolAndValue[1] < cardToValue(player.getPlayerCards().get(autoPlayCard))) {
+                    autoPlayCard = i;
+                }
+            }
+        }
+        if (cardOfSymbolFound) {
+            return autoPlayCard;
+        }
+        if (player.getPlayerCards().contains("s12")) {
+            return player.getPlayerCards().indexOf("s12");
+        }
+        for (int i = 0; i < player.getPlayerCards().size(); i++) {
+            String s = player.getPlayerCards().get(i);
+            int[] symbolAndValue = getSymbolAndValue(s);
+            if (symbolAndValue[0] == 0) {
+                heartsCardFound = true;
+                if (setFirst) {
+                    autoPlayCard = i;
+                    setFirst = false;
+                } else if (symbolAndValue[1] > cardToValue(player.getPlayerCards().get(autoPlayCard))) {
+                    autoPlayCard = i;
+                }
+            }
+        }
+        if (heartsCardFound) {
+            return autoPlayCard;
+        }
+        for (int i = 0; i < player.getPlayerCards().size(); i++) {
+            String s = player.getPlayerCards().get(i);
+            int[] symbolAndValue = getSymbolAndValue(s);
+            if (symbolAndValue[1] > cardToValue(player.getPlayerCards().get(autoPlayCard))) {
+                autoPlayCard = i;
+            }
+        }
+        return autoPlayCard;
+    }
+
+
+    private int cardToValue(String card) {
+        return getSymbolAndValue(card)[1];
     }
 
     public Player getHandWinner(String[] handAtPlay, int symbol, @NotNull Player starter) {
@@ -215,7 +302,7 @@ public class Game {
             }
         }
 
-        if (symbol == 0) this.canPlayHearts = true;
+        if (symbolToNum(play.charAt(0)) == 0) this.canPlayHearts = true;
 
         return true;
     }
