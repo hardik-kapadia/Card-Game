@@ -164,13 +164,14 @@ public class Game {
             System.out.println();
             return autoPlay(player, symbol);
         }
+        System.out.println("\n");
         while (true) { // takes input from player and returns it if the input is valid
-            System.out.print("\n\nEnter number corresponding to card you want to play: ");
+            System.out.print("Enter number corresponding to card you want to play: ");
             int cardToPlay = Integer.parseInt(scanner.next());
             if (cardToPlay < player.getPlayerCards().size()) {
                 return cardToPlay;
             } else {
-                System.out.println("Please Enter a valid card");
+                System.out.println("Please Enter a valid card\n");
             }
         }
     }
