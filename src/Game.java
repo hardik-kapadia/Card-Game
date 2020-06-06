@@ -7,17 +7,16 @@ public class Game {
 
     private final Deck deck;
     private final Scanner scanner;
+    private final int numberOfPlayers;
     private String[] playerNames;
     private Player[] players;
-    private final int numberOfPlayers;
-    private Player handStarter;
     private String[] currentHand;
     private int handCount;
     private int roundCount;
     private boolean canPlayHearts;
     private boolean isFirstCard;
 
-    public Game(Deck deck, Scanner sc) {
+    public Game(Deck deck, Scanner sc) { // initializing all necessary variables
         this.deck = deck;
         this.scanner = sc;
         this.numberOfPlayers = this.deck.getNumberOfPlayers();
@@ -26,7 +25,7 @@ public class Game {
         currentHand = new String[numberOfPlayers];
     }
 
-    public void getNames() {
+    public void getNames() { // gets names of all players and whether they are bots or not
         while (true) {
             int numberOfBots = 0;
             for (int i = 0; i < deck.getNumberOfPlayers(); i++) {
@@ -39,7 +38,7 @@ public class Game {
                     playerNames[i] = (name);
                 }
             }
-            if(numberOfBots < 4){
+            if (numberOfBots < 4) {
                 break;
             } else {
                 System.out.println("You have to add at least one player!");
@@ -47,113 +46,111 @@ public class Game {
         }
     }
 
-    public void startGame() {
+    public void startGame() { // The main program which is called in UserInterface
         getNames();
-        deck.deal();
-        for (int i = 0; i < numberOfPlayers; i++) {
+        for (int i = 0; i < numberOfPlayers; i++) { // assigns bot status based on name of player
             if (playerNames[i].equals("Bot-" + (i + 1))) {
                 players[i] = new Player(deck.getPlayerDecks()[i], playerNames[i], i, true);
             } else {
                 players[i] = new Player(deck.getPlayerDecks()[i], playerNames[i], i, false);
             }
         }
-        this.roundCount = 1;
-        startRound();
+        this.roundCount = 1; // sets roundcounter to 1
+        startRound(); // starts the round
     }
 
     public void startRound() {
         System.out.println("\n-------------------------------------------------------");
         System.out.println("-------------------------------------------------------");
         System.out.println("\nRound no. " + roundCount + " started");
-        roundCount++;
-        if (checkGameStats()) {
-            deck.resetDeck();
-            deck.deal();
-            for (int i = 0; i < numberOfPlayers; i++) {
+        roundCount++; // increments roundCounter
+        if (checkGameStats()) { // check if any of the players have a score above 100, if not continues to start round or ends game
+            deck.resetDeck(); // resetting the deck
+            deck.deal(); // deals the cards to the players
+            for (int i = 0; i < numberOfPlayers; i++) { // assigned to new decks to all players
                 players[i].setPlayerCards(deck.getPlayerDecks()[i]);
             }
-            this.canPlayHearts = false;
+            this.canPlayHearts = false; // basic initializations for starting the round fresh
             this.isFirstCard = true;
-            this.handStarter = firstStarter();
-            emptyArray(currentHand);
-            handCount = 1;
-            startHand(handStarter);
+            Player handStarter = firstStarter(); // decides who will start the round based on the 2 of clubs
+            handCount = 1; // initializes the handCount
+            startHand(handStarter); // starts the hand
         } else {
-            endGame();
+            endGame(); // ends the game
         }
     }
 
-    private Player firstStarter() {
+    private Player firstStarter() { // goes through all the player's cards and returns which player has the 2 of clubs
         for (Player p : players) {
             if (p.getPlayerCards().contains("c2")) {
                 return p;
             }
         }
-        return players[0];
+        return players[0]; // Impossible scenario: If nobody has the two of spades, returns the first player
     }
 
-    public void startHand(Player hStarter) {
-        if (handCount <= 13) {
-            emptyArray(currentHand);
+    public void startHand(Player handStarter) { // starts the hand
+        if (handCount <= 13) { // There can be only 13 hands in one round
+            emptyArray(currentHand); // sets the currentHand to null
             System.out.println("\n-------------------------------------------------------");
             System.out.println("\nStarting hand number: " + handCount);
-            int symbol = 4;
-            for (int i = 0; i < numberOfPlayers; i++) {
-                Player currentPlayer = players[(hStarter.getId() + i) % 4];
-                int playNum = promptUser(currentPlayer, symbol);
-                String play = currentPlayer.getPlayerCards().get(playNum);
+            int symbol = 4; // symbol is 4 when starting the hand and then assumes the values 0 to 3 based on first card played
+            for (int i = 0; i < numberOfPlayers; i++) { // loops through all the players
+                Player currentPlayer = players[(handStarter.getId() + i) % 4]; //sets current player for this loop by adding i to handStarter
+                int playNum = promptUser(currentPlayer, symbol); // gets the index of the card the user wants to play
+                String play = currentPlayer.getPlayerCards().get(playNum); // gets the actual card based on th index of card
                 System.out.println("\n" + currentPlayer.getName() + " Played: " + getPrintableCard(play));
-                if (symbol == 4) {
-                    symbol = getSymbolAndValue(play)[0];
-                    if (symbol == 0) {
-                        if (!this.canPlayHearts) {
-                            symbol = 4;
-                            i--;
+                if (symbol == 4) { // if this is the first card of the hand, then assigns the symbol
+                    symbol = getSymbolAndValue(play)[0]; // sets symbol to the symbol of the first card played
+                    if (symbol == 0) { // if the symbol of the first card is a heart
+                        if (!this.canPlayHearts) { // check if the player can play a Heart card based on MS Heart rules
+                            symbol = 4; // reverts value of symbol back to 4 as from 0
+                            i--; // decrements i by one so the player gets to play again
                             System.out.println("You Cannot play a Heart Card right now!");
-                            continue;
                         }
                     }
                     System.out.println("New hand started, symbol assigned: " + numToString(getSymbolAndValue(play)[0]));
                 }
-                if (playValidity(currentPlayer, play, symbol)) {
-                    currentPlayer.removeCard(playNum);
-                    currentHand[currentPlayer.getId()] = play;
+                if (playValidity(currentPlayer, play, symbol)) { // check validity of card and if valid,
+                    currentPlayer.removeCard(playNum); // removes card from player's deck
+                    currentHand[currentPlayer.getId()] = play; // adds card to current hand
                 } else {
                     System.out.println("\n Please play a valid card\n");
                     i--;
                 }
             }
             System.out.println("\nFinal hand: " + Arrays.toString(getPrintableHand(currentHand)));
-            Player nextHandStarter = getHandWinner(currentHand, symbol, hStarter);
+            Player nextHandStarter = getHandWinner(currentHand, symbol, handStarter); // gets the winner of the hand
             System.out.println(nextHandStarter.getName() + " got the hand");
-            addHandPoints(currentHand, nextHandStarter);
+            addHandPoints(currentHand, nextHandStarter); // adds points to the winner
             handCount++;
             System.out.println("\n-------------------------------------------------------\n");
             System.out.print("ScoreCard: \n\n");
             printScoreCard();
-            startHand(nextHandStarter);
+            startHand(nextHandStarter); // starts recursive function but with this hand's winner as next hand's starter
         } else {
-            startRound();
+            startRound(); // starts new round if all 13 cards have been played
         }
     }
 
-    public int promptUser(@NotNull Player player, int symbol) {
+    public int promptUser(@NotNull Player player, int symbol) { // takes input from player or automatically returns bot's card or the
+        // default card, also prints information to help player choose card
         System.out.println("\n|\tIts is " + player.getName() + "'s turn\t|\n");
         System.out.println("The current hand is: ");
-        String[] printingHand = getPrintableHand(currentHand);
-        for (int j = 0; j < numberOfPlayers; j++) {
+        String[] printingHand = getPrintableHand(currentHand); // stores current hand in a beautified format
+        for (int j = 0; j < numberOfPlayers; j++) { // prints the current hand with each player and his/ her card
             System.out.print(players[j].getName() + ": " + printingHand[j] + "\t");
         }
         System.out.println();
         if (symbol != 4) System.out.println("Ongoing Symbol is: " + numToString(symbol) + "\n");
         System.out.println("Your cards are: ");
-        for (int i = 0; i < player.getPlayerCards().size(); i++) {
+        for (int i = 0; i < player.getPlayerCards().size(); i++) { // prints the player's deck with each cards index number
             System.out.print("(" + i + ") " + getPrintableCard(player.getPlayerCards().get(i)) + "\t");
-            if (i == 7) {
+            if (i == 7) { // prints a newline after the 7th card for visual betterment
                 System.out.println();
             }
         }
-        if (isFirstCard) {
+        if (isFirstCard) { // automatically returns the 2 of clubs if this is the first card of the first hand of the rounf
             System.out.println("\n\nThis is the first play, so the 2 of clubs is automatically selected for you.");
             isFirstCard = false;
             for (int i = 0; i < player.getPlayerCards().size(); i++) {
@@ -162,56 +159,58 @@ public class Game {
                 }
             }
         }
-        if (player.isBot()) {
+        if (player.isBot()) { // if the player is a bot, returns a card automatically based on pre-decided algorithm
             System.out.println();
             return autoPlay(player, symbol);
         }
-        while(true){
+        while (true) { // takes input from player and returns it if the input is valid
             System.out.print("\n\nEnter number corresponding to card you want to play: ");
             int cardToPlay = scanner.nextInt();
-            if(cardToPlay<player.getPlayerCards().size()){
+            if (cardToPlay < player.getPlayerCards().size()) {
                 return cardToPlay;
-            }
-            else {
+            } else {
                 System.out.println("Please Enter a valid card");
             }
         }
     }
 
-    public int autoPlay(Player player, int symbol) {
+    public int autoPlay(Player player, int symbol) { // pre-decided algorithm to decide the bot's play
         int autoPlayCard = 0;
-        if (symbol == 4) {
+        if (symbol == 4) { // if this is the first card,
             while (true) {
-                autoPlayCard = (int) (Math.random() * player.getPlayerCards().size());if(this.canPlayHearts){
+                autoPlayCard = (int) (Math.random() * player.getPlayerCards().size()); // randomly select a card from the deck and
+                if (this.canPlayHearts) { // play the card directly if playing hearts has been allowed by the game
                     return autoPlayCard;
-                } else if (symbolToNum(player.getPlayerCards().get(autoPlayCard).charAt(0)) != 0) {
+                } else if (symbolToNum(player.getPlayerCards().get(autoPlayCard).charAt(0)) != 0) { // check whether the card is no a heart
+                    // returns the card if not else start again
                     return autoPlayCard;
                 }
             }
         }
-        boolean setFirst = true;
-        boolean cardOfSymbolFound = false;
-        boolean heartsCardFound = false;
-        for (int i = 0; i < player.getPlayerCards().size(); i++) {
+        boolean setFirst = true; // setFirst card of the same symbol or so as the default card
+        boolean cardOfSymbolFound = false; // self-explanatory
+        boolean heartsCardFound = false; // self-explanatory
+        for (int i = 0; i < player.getPlayerCards().size(); i++) { // goes through each card of player's deck
             String s = player.getPlayerCards().get(i);
-            int[] symbolAndValue = getSymbolAndValue(s);
-            if (symbolAndValue[0] == symbol) {
+            int[] symbolAndValue = getSymbolAndValue(s); // gets the symbol and value numerically
+            if (symbolAndValue[0] == symbol) { // if the card is of same symbol as ongoing card
                 cardOfSymbolFound = true;
-                if (setFirst) {
+                if (setFirst) { // if this is the first card of symbol found, set it as the card to play
                     autoPlayCard = i;
                     setFirst = false;
-                } else if (symbolAndValue[1] < cardToValue(player.getPlayerCards().get(autoPlayCard))) {
+                } else if (symbolAndValue[1] < cardToValue(player.getPlayerCards().get(autoPlayCard))) { // compare with current card set to play
+                    // and sets the lower card to play
                     autoPlayCard = i;
                 }
             }
         }
-        if (cardOfSymbolFound) {
+        if (cardOfSymbolFound) { // returns if same symbol's card found
             return autoPlayCard;
-        }
-        if (player.getPlayerCards().contains("s12")) {
+        } // If same symbol's card not found the...
+        if (player.getPlayerCards().contains("s12")) { // ...check if the player has the queen of spades and returns it
             return player.getPlayerCards().indexOf("s12");
-        }
-        for (int i = 0; i < player.getPlayerCards().size(); i++) {
+        } // if player does not have the queen of spades
+        for (int i = 0; i < player.getPlayerCards().size(); i++) { // goes through each card of player's deck and sets the card to play as the highest card of hearts
             String s = player.getPlayerCards().get(i);
             int[] symbolAndValue = getSymbolAndValue(s);
             if (symbolAndValue[0] == 0) {
@@ -224,77 +223,24 @@ public class Game {
                 }
             }
         }
-        if (heartsCardFound) {
+        if (heartsCardFound) { // returns if the player has a heart card
             return autoPlayCard;
-        }
-        for (int i = 0; i < player.getPlayerCards().size(); i++) {
+        } // if he doesn't...
+        for (int i = 0; i < player.getPlayerCards().size(); i++) { // ... sets card to play as the highest valued card
             String s = player.getPlayerCards().get(i);
             int[] symbolAndValue = getSymbolAndValue(s);
             if (symbolAndValue[1] > cardToValue(player.getPlayerCards().get(autoPlayCard))) {
                 autoPlayCard = i;
             }
         }
-        return autoPlayCard;
+        return autoPlayCard; // returns highest values card's index in player's deck
     }
 
-
-    private int cardToValue(String card) {
-        return getSymbolAndValue(card)[1];
-    }
-
-    public Player getHandWinner(String[] handAtPlay, int symbol, @NotNull Player starter) {
-        Player winner = starter;
-        for (Player p : players) {
-            int[] symbolAndValue = getSymbolAndValue(handAtPlay[p.getId()]);
-            if (symbolAndValue[0] != symbol) {
-                continue;
-            }
-            if (symbolAndValue[1] < Integer.parseInt(handAtPlay[winner.getId()].substring(1))) {
-                continue;
-            }
-            winner = p;
-        }
-        return winner;
-    }
-
-    public void addHandPoints(String[] handAtPlay, Player winner) {
-        int totalPointsGiveToWinner = 0;
-        for (String s : handAtPlay) {
-            int[] symbolAndValue = getSymbolAndValue(s);
-            if (symbolAndValue[0] == 0) {
-                totalPointsGiveToWinner++;
-            } else if (symbolAndValue[0] == 2 && symbolAndValue[1] == 12) {
-                totalPointsGiveToWinner += 13;
-            }
-        }
-        if (totalPointsGiveToWinner == 26) {
-            for (Player player : players) {
-                if (!winner.equals(player)) {
-                    player.addPoints(26);
-                }
-            }
-        } else {
-            winner.addPoints(totalPointsGiveToWinner);
-        }
-        System.out.println(totalPointsGiveToWinner + " points awarded to " + winner.getName() + "\n");
-    }
-
-    private int[] getSymbolAndValue(@NotNull String card) {
-        // returns an array [symbol, value] according to specified legend
-        return new int[]{symbolToNum(card.charAt(0)), Integer.parseInt(card.substring(1))};
-    }
-
-    private void emptyArray(String[] arrayToEmpty) {
-        // replaces all the values in specified array to null, therefore emptying the array
-        Arrays.fill(arrayToEmpty, null);
-    }
-
-
-    public boolean playValidity(Player player, String play, int symbol) {
-        if (symbolToNum(play.charAt(0)) == symbol) {
+    public boolean playValidity(Player player, String play, int symbol) { // check's the player's card's validity in that hand
+        if (symbolToNum(play.charAt(0)) == symbol) { // if the symbols are same, returns true
             return true;
-        }
-        for (int i = 0; i < player.getPlayerCards().size(); i++) {
+        } // if the card has a different symbol...
+        for (int i = 0; i < player.getPlayerCards().size(); i++) { // ...check if the player has any card of sme symbol in his deck
             if (symbolToNum(player.getPlayerCards().get(i).charAt(0)) == symbol) {
                 return false;
             }
@@ -305,7 +251,58 @@ public class Game {
         return true;
     }
 
-    public int symbolToNum(char symbol) {
+
+    public Player getHandWinner(String[] handAtPlay, int symbol, @NotNull Player starter) { // gets the winner of the hand
+        Player winner = starter; // assume that the winner is the person who played the first card in the hand
+        for (Player p : players) { // cycles through each player's card in the hand and...
+            int[] symbolAndValue = getSymbolAndValue(handAtPlay[p.getId()]);
+            if (symbolAndValue[0] != symbol) { // ... skips to next iteration if their card's symbol is not the same as the symbol of the hand
+                continue;
+            }
+            if (symbolAndValue[1] < Integer.parseInt(handAtPlay[winner.getId()].substring(1))) { // ...skips to nex iteration if the card's value is
+                // lower than the current winner's card
+                continue;
+            }
+            winner = p; // if the player passed both of the above tests, he is the new winner
+        }
+        return winner;
+    }
+
+    public void addHandPoints(String[] handAtPlay, Player winner) { // adds points to the winner
+        int totalPointsGiveToWinner = 0;
+        for (String s : handAtPlay) { // adds one point for each Heart's card and 13 points for the queen of spades
+            int[] symbolAndValue = getSymbolAndValue(s);
+            if (symbolAndValue[0] == 0) {
+                totalPointsGiveToWinner++;
+            } else if (symbolAndValue[0] == 2 && symbolAndValue[1] == 12) {
+                totalPointsGiveToWinner += 13;
+            }
+        }
+        if (totalPointsGiveToWinner == 26) { // If the winner has all 13 heart's card and the queen of spades, everyone but the player is awarded 26 points
+            for (Player player : players) {
+                if (!winner.equals(player)) {
+                    player.addPoints(26);
+                }
+            }
+        } else {
+            winner.addPoints(totalPointsGiveToWinner); // adds points to the winner
+        }
+        System.out.println(totalPointsGiveToWinner + " points awarded to " + winner.getName() + "\n");
+    }
+
+    private int[] getSymbolAndValue(@NotNull String card) { // returns an array [symbol, value] according to specified legend
+        return new int[]{symbolToNum(card.charAt(0)), Integer.parseInt(card.substring(1))};
+    }
+
+    private void emptyArray(String[] arrayToEmpty) { // replaces all the values in specified array to null, therefore emptying the array
+        Arrays.fill(arrayToEmpty, null);
+    }
+
+    private int cardToValue(String card) { // takes String as input and returns the card's value (h12 -> 12)
+        return getSymbolAndValue(card)[1];
+    }
+
+    public int symbolToNum(char symbol) { // returns number corresponding to given symbol
         return switch (symbol) {
             case 'h' -> 0;
             case 'd' -> 1;
@@ -315,20 +312,20 @@ public class Game {
         };
     }
 
-    public boolean checkGameStats() {
+    public boolean checkGameStats() { // check whether the game should go on or not based on the player's points
         for (int i = 0; i < numberOfPlayers; i++) {
-            if (!checkPoints(players[i])) {
+            if (!checkPoints(players[i])) { // checks if any player's points are above hundred, if so: return false
                 return false;
             }
         }
-        return true;
+        return true; // else, return true
     }
 
-    public boolean checkPoints(Player player) {
-        return player.getPoints() < 100;
+    public boolean checkPoints(Player player) { // check whether given player's points are below 100...
+        return player.getPoints() < 100; // ... or not
     }
 
-    private String numToString(int symbol) {
+    private String numToString(int symbol) { // returns the string for the symbol corresponding to given number
         return switch (symbol) {
             case 0 -> "Hearts";
             case 1 -> "Diamonds";
@@ -338,9 +335,10 @@ public class Game {
         };
     }
 
-    private String getPrintableCard(String card) {
+    private String getPrintableCard(String card) { // returns a String with a beautified format of card
+                                                   // h10 becomes 10 of Hearts & s14 becomes Ace of Spades (More info in legend)
         String properCard;
-        if (card == null) {
+        if (card == null) { // if card is not yet played, returns so
             return "Not yet played";
         }
         int[] symbolsAndValues = getSymbolAndValue(card);
@@ -365,7 +363,7 @@ public class Game {
 
     }
 
-    public String[] getPrintableHand(String[] cards) {
+    public String[] getPrintableHand(String[] cards) { // Accepts a String array of cards and returns a String array of said cards in beautifies format
         String[] properHand = new String[cards.length];
         int i = 0;
         String card;
@@ -377,7 +375,7 @@ public class Game {
         return properHand;
     }
 
-    public void endGame() {
+    public void endGame() { // ends the Game and returns control to UserInterface
         System.out.println("Game has ended!");
         System.out.println(getWinner().getName() + " is the Winner!!!\n\n");
         System.out.println("\n------------------------------------------------");
@@ -386,7 +384,7 @@ public class Game {
         deck.resetDeck();
     }
 
-    public Player getWinner() {
+    public Player getWinner() { // returns winner of the game (the player with the least points)
         Player winner;
         winner = players[0];
         for (Player player : players) {
@@ -397,7 +395,7 @@ public class Game {
         return winner;
     }
 
-    public void printScoreCard() {
+    public void printScoreCard() { // prints the player's name and their scores
         for (int i = 0; i < numberOfPlayers; i++) {
             System.out.println(i + ". " + players[i].getName() + "\t" + players[i].getPoints());
         }
