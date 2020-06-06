@@ -107,6 +107,7 @@ public class Game {
                             symbol = 4; // reverts value of symbol back to 4 as from 0
                             i--; // decrements i by one so the player gets to play again
                             System.out.println("You Cannot play a Heart Card right now!");
+                            continue;
                         }
                     }
                     System.out.println("New hand started, symbol assigned: " + numToString(getSymbolAndValue(play)[0]));
@@ -165,7 +166,7 @@ public class Game {
         }
         while (true) { // takes input from player and returns it if the input is valid
             System.out.print("\n\nEnter number corresponding to card you want to play: ");
-            int cardToPlay = scanner.nextInt();
+            int cardToPlay = Integer.parseInt(scanner.next());
             if (cardToPlay < player.getPlayerCards().size()) {
                 return cardToPlay;
             } else {
@@ -322,7 +323,7 @@ public class Game {
     }
 
     public boolean checkPoints(Player player) { // check whether given player's points are below 50...
-        return player.getPoints() < 100; // ... or not
+        return player.getPoints() < 50; // ... or not
     }
 
     private String numToString(int symbol) { // returns the string for the symbol corresponding to given number

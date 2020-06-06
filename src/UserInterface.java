@@ -2,7 +2,7 @@ import java.util.Scanner;
 
 public class UserInterface {
 
-    private final Scanner scanner;
+    private Scanner scanner;
     private Deck deck;
     private Game game;
 
@@ -25,6 +25,7 @@ public class UserInterface {
                 System.out.println("Exiting");
                 break;
             }
+            this.scanner = new Scanner(System.in);
         }
     }
 }
