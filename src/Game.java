@@ -61,10 +61,10 @@ public class Game {
 
     public void startRound() {
         System.out.println("\n-------------------------------------------------------");
-        System.out.println("-------------------------------------------------------");
-        System.out.println("\nRound no. " + roundCount + " started");
-        roundCount++; // increments roundCounter
+        System.out.print("-------------------------------------------------------");
         if (checkGameStats()) { // check if any of the players have a score above 100, if not continues to start round or ends game
+            System.out.println("\nRound no. " + roundCount + " started");
+            roundCount++; // increments roundCounter
             deck.resetDeck(); // resetting the deck
             deck.deal(); // deals the cards to the players
             for (int i = 0; i < numberOfPlayers; i++) { // assigned to new decks to all players
@@ -92,7 +92,7 @@ public class Game {
     public void startHand(Player handStarter) { // starts the hand
         if (handCount <= 13) { // There can be only 13 hands in one round
             emptyArray(currentHand); // sets the currentHand to null
-            System.out.println("\n-------------------------------------------------------");
+            System.out.println("-------------------------------------------------------");
             System.out.println("\nStarting hand number: " + handCount);
             int symbol = 4; // symbol is 4 when starting the hand and then assumes the values 0 to 3 based on first card played
             for (int i = 0; i < numberOfPlayers; i++) { // loops through all the players
@@ -323,7 +323,7 @@ public class Game {
     }
 
     public boolean checkPoints(Player player) { // check whether given player's points are below 50...
-        return player.getPoints() < 50; // ... or not
+        return player.getPoints() < 12; // ... or not
     }
 
     private String numToString(int symbol) { // returns the string for the symbol corresponding to given number
@@ -377,12 +377,17 @@ public class Game {
     }
 
     public void endGame() { // ends the Game and returns control to UserInterface
+        System.out.println("\n------------------------------------------------\n");
         System.out.println("Game has ended!");
-        System.out.println(getWinner().getName() + " is the Winner!!!\n\n");
+        System.out.println(getWinner().getName() + " is the Winner!!!\n");
         System.out.println("\n------------------------------------------------");
         System.out.println("\n------------------------------------------------");
         printScoreCard();
         deck.resetDeck();
+        System.out.println("\n------------------------------------------------");
+        System.out.println("\n------------------------------------------------");
+        System.out.println("\n");
+
     }
 
     public Player getWinner() { // returns winner of the game (the player with the least points)
@@ -397,6 +402,7 @@ public class Game {
     }
 
     public void printScoreCard() { // prints the player's name and their scores
+        System.out.println("\tScores\n");
         for (int i = 0; i < numberOfPlayers; i++) {
             System.out.println(i + ". " + players[i].getName() + "\t" + players[i].getPoints());
         }

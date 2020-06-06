@@ -25,7 +25,9 @@ public class UserInterface {
                 System.out.println("Exiting");
                 break;
             }
-            this.scanner = new Scanner(System.in);
+            if(scanner.hasNextLine()){
+                scanner.nextLine();
+            }
         }
     }
 }
