@@ -9,14 +9,13 @@ public class Game {
     private final Scanner scanner;
     private String[] playerNames;
     private Player[] players;
-    private int numberOfPlayers;
+    private final int numberOfPlayers;
     private Player handStarter;
     private String[] currentHand;
     private int handCount;
     private int roundCount;
     private boolean canPlayHearts;
     private boolean isFirstCard;
-    private int positionOfFirstCard;
 
     public Game(Deck deck, Scanner sc) {
         this.deck = deck;
@@ -52,14 +51,10 @@ public class Game {
         getNames();
         deck.deal();
         for (int i = 0; i < numberOfPlayers; i++) {
-
-            // System.out.println("Deck assigned to "+players[i].getName());
             if (playerNames[i].equals("Bot-" + (i + 1))) {
                 players[i] = new Player(deck.getPlayerDecks()[i], playerNames[i], i, true);
-                // players[i].setBotStatus(true);
             } else {
                 players[i] = new Player(deck.getPlayerDecks()[i], playerNames[i], i, false);
-                // players[i].setBotStatus(false);
             }
         }
         this.roundCount = 1;
@@ -70,8 +65,8 @@ public class Game {
         System.out.println("\n-------------------------------------------------------");
         System.out.println("-------------------------------------------------------");
         System.out.println("\nRound no. " + roundCount + " started");
+        roundCount++;
         if (checkGameStats()) {
-            // System.out.println("checkGameStats() Passed");
             deck.resetDeck();
             deck.deal();
             for (int i = 0; i < numberOfPlayers; i++) {
@@ -80,11 +75,9 @@ public class Game {
             this.canPlayHearts = false;
             this.isFirstCard = true;
             this.handStarter = firstStarter();
-            this.positionOfFirstCard = 0;
             emptyArray(currentHand);
             handCount = 1;
             startHand(handStarter);
-            roundCount++;
         } else {
             endGame();
         }
@@ -116,7 +109,7 @@ public class Game {
                         if (!this.canPlayHearts) {
                             symbol = 4;
                             i--;
-                            System.out.println("You Cannot play a Heart Card till you play it as a foke first");
+                            System.out.println("You Cannot play a Heart Card right now!");
                             continue;
                         }
                     }
@@ -173,18 +166,23 @@ public class Game {
             System.out.println();
             return autoPlay(player, symbol);
         }
-        System.out.print("\n\nEnter number corresponding to card you want to play: ");
-        return scanner.nextInt();
+        while(true){
+            System.out.print("\n\nEnter number corresponding to card you want to play: ");
+            int cardToPlay = scanner.nextInt();
+            if(cardToPlay<player.getPlayerCards().size()){
+                return cardToPlay;
+            }
+            else {
+                System.out.println("Please Enter a valid card");
+            }
+        }
     }
 
     public int autoPlay(Player player, int symbol) {
         int autoPlayCard = 0;
         if (symbol == 4) {
             while (true) {
-                autoPlayCard = (int) (Math.random() * player.getPlayerCards().size());
-                System.out.println("Can play hearts? "+this.canPlayHearts);
-                System.out.println("\n\tAutomatically playing "+getPrintableCard(player.getPlayerCards().get(autoPlayCard))+" as handStarter");
-                if(this.canPlayHearts){
+                autoPlayCard = (int) (Math.random() * player.getPlayerCards().size());if(this.canPlayHearts){
                     return autoPlayCard;
                 } else if (symbolToNum(player.getPlayerCards().get(autoPlayCard).charAt(0)) != 0) {
                     return autoPlayCard;
