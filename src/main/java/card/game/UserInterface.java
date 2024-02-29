@@ -1,16 +1,20 @@
+package card.game;
+
 import java.util.Scanner;
 
 public class UserInterface {
 
-    private Scanner scanner;
-    private Deck deck;
-    private Game game;
+    private final Scanner scanner;
 
     public UserInterface(Scanner sc) { // Initializations
         this.scanner = sc;
     }
 
     public void start() { // starts the game
+
+        Deck deck;
+        Game game;
+
         while (true) { // Infinite loop till player chooses to exit
             char choice;
             System.out.println("Please select the Game you want to play");

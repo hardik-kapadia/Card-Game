@@ -1,3 +1,5 @@
+package card.game;
+
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -29,7 +31,7 @@ public class Game {
             for (int i = 0; i < deck.getNumberOfPlayers(); i++) {
                 System.out.println("Enter your name: [leave blank to replace with bot]");
                 String name = scanner.nextLine();
-                if (name.equals("")) {
+                if (name.isEmpty()) {
                     playerNames[i] = ("Bot-" + (i + 1));
                     numberOfBots++;
                 } else {
@@ -181,7 +183,7 @@ public class Game {
                 autoPlayCard = (int) (Math.random() * player.getPlayerCards().size()); // randomly select a card from the deck and
                 if (this.canPlayHearts)  // play the card directly if playing hearts has been allowed by the game
                     return autoPlayCard;
-                 else if (symbolToNum(player.getPlayerCards().get(autoPlayCard).charAt(0)) != 0)  // check whether the card is not a heart
+                else if (symbolToNum(player.getPlayerCards().get(autoPlayCard).charAt(0)) != 0)  // check whether the card is not a heart
                     return autoPlayCard; // returns the card if not else start again
             }
         }
@@ -206,11 +208,11 @@ public class Game {
 
         if (cardOfSymbolFound)  // returns if same symbol's card found
             return autoPlayCard;
-         // If same symbol's card not found the...
+        // If same symbol's card not found the...
 
         if (player.getPlayerCards().contains("s12")) // ...check if the player has the queen of spades and returns it
             return player.getPlayerCards().indexOf("s12");
-         // if player does not have the queen of spades
+        // if player does not have the queen of spades
 
         for (int i = 0; i < player.getPlayerCards().size(); i++) { // goes through each card of player's deck and sets the card to play as the highest card of hearts
             String s = player.getPlayerCards().get(i);
@@ -227,7 +229,7 @@ public class Game {
         }
         if (heartsCardFound)  // returns if the player has a heart card
             return autoPlayCard;
-         // if he doesn't...
+        // if he doesn't...
         for (int i = 0; i < player.getPlayerCards().size(); i++) { // ... sets card to play as the highest valued card
             String s = player.getPlayerCards().get(i);
             int[] symbolAndValue = getSymbolAndValue(s);
