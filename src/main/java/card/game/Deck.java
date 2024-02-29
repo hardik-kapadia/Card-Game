@@ -1,11 +1,13 @@
+package card.game;
+
 import java.util.ArrayList;
 import java.util.Random;
 
 public class Deck {
 
     private final int numberOfPlayers;
-    private String[] allCards;
-    private ArrayList<String>[] playerDecks;
+    private final String[] allCards;
+    private final ArrayList<String>[] playerDecks;
     private int cardsLeft;
 
     public Deck(int numberOfPlayers) { // Initializations
@@ -72,19 +74,21 @@ public class Deck {
         return playerDecks;
     } // returns an Array of ArrayLists containing each Player's cards
 
-    public void resetDeck() { // resets the full deck to it's original 52 cards and empties all the player's decks
+    public void resetDeck() { // resets the full deck to its original 52 cards and empties all the player's decks
         createDeck();
         for (int i = 0; i < numberOfPlayers; i++) {
             playerDecks[i].clear();
         }
     }
 
+    /* Not being used currently
     private void remove(int index) { // removes card from the full deck
         if (cardsLeft - 1 - index >= 0)
             System.arraycopy(this.allCards, index + 1, this.allCards, index, cardsLeft - 1 - index);
         this.allCards[cardsLeft - 1] = null;
         this.cardsLeft--;
     }
+    */
 
     /*
 
